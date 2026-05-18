@@ -26,7 +26,7 @@ use App\Http\Controllers\Master\MasterController;
 // ==========================================
 // Si alguien entra a la raíz "/", lo mandamos por defecto a Mexticacán
 Route::get('/', function() {
-    return redirect()->route('reportes.create', ['municipio' => 'mexticacan']);
+    return redirect()->route('reportes.create', ['municipio' => 'nochistlan']);
 });
 
 // Ruta dinámica (Ej: /m/teocaltiche)
