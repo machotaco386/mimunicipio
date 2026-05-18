@@ -48,7 +48,7 @@
                 </a>
                 
                 <!-- Solo dejamos el botón de Consultar, en formato "Pill" -->
-                <a href="{{ route('reportes.consulta') }}" class="text-xs font-bold uppercase tracking-wider bg-slate-100 text-institucional hover:bg-slate-200 active:scale-95 px-4 py-2.5 rounded-full transition-all flex items-center gap-2">
+                <a href="{{ route('reportes.consulta', ['m' => request()->route('municipio') ?? 'nochistlan']) }}" class="text-xs font-bold uppercase tracking-wider bg-slate-100 text-institucional hover:bg-slate-200 active:scale-95 px-4 py-2.5 rounded-full transition-all flex items-center gap-2">
                     <i class="ph-bold ph-magnifying-glass text-base"></i> Consultar
                 </a>
             </div>

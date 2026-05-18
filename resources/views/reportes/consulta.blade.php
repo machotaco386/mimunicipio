@@ -13,11 +13,10 @@
 
     <!-- Botón Volver (UX) -->
     <div class="mb-6">
-        <!-- Añadimos el id="btn-volver" para que el Javascript pueda manipular la ruta -->
-        <a id="btn-volver" href="{{ route('reportes.create', ['municipio' => 'mexticacan']) }}" class="inline-flex items-center gap-2 text-slate-500 hover:text-institucional font-bold text-sm bg-white border border-slate-200 px-4 py-2 rounded-xl shadow-sm transition active:scale-95">
-            <i class="ph-bold ph-arrow-left"></i> Volver a Nuevo Reporte
-        </a>
-    </div>
+    <a id="btn-volver" href="{{ route('reportes.create', ['municipio' => request()->query('m') ?? 'nochistlan']) }}" class="inline-flex items-center gap-2 text-slate-500 hover:text-institucional font-bold text-sm bg-white border border-slate-200 px-4 py-2 rounded-xl shadow-sm transition active:scale-95">
+        <i class="ph-bold ph-arrow-left"></i> Volver a Nuevo Reporte
+    </a>
+    </div>>
 
     <!-- Alerta de Reporte Creado Exitosamente -->
     @if (session('success'))
