@@ -6,11 +6,37 @@
 <!-- Motor WebGL MapLibre CSS -->
 <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet" />
 
-<!-- Estilos para invertir el color del texto satelital -->
+<!-- Estilos para invertir el color del texto satelital y el Punto Azul -->
 <style>
     .etiquetas-blancas {
         -webkit-filter: invert(100%) brightness(2.5) contrast(1.5) drop-shadow(0 0 2px black) drop-shadow(0 0 3px black) !important;
         filter: invert(100%) brightness(2.5) contrast(1.5) drop-shadow(0 0 2px black) drop-shadow(0 0 3px black) !important;
+    }
+
+    /* Punto Azul Palpitante (Geolocalización) */
+    .maplibregl-user-location-dot {
+        background-color: #3b82f6 !important; /* Azul Tailwind */
+        width: 18px !important;
+        height: 18px !important;
+        border: 3px solid white !important;
+        box-shadow: 0 0 10px rgba(0,0,0,0.4) !important;
+        position: relative;
+    }
+    .maplibregl-user-location-dot::before {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background-color: #3b82f6;
+        animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        z-index: -1;
+        top: 0;
+        left: 0;
+    }
+    @keyframes pulse-ring {
+        0% { transform: scale(1); opacity: 0.6; }
+        100% { transform: scale(4); opacity: 0; }
     }
 </style>
 
@@ -470,14 +496,44 @@
         });
 
         mapa.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'top-right');
+        
+        // ==============================================================
+        // NUEVO: Botón de Geolocalización Nativo (Punto Azul + Radio)
+        // ==============================================================
+        const geolocateControl = new maplibregl.GeolocateControl({
+            positionOptions: { enableHighAccuracy: true },
+            trackUserLocation: true,
+            showUserHeading: true,
+            showUserLocation: true,
+            showAccuracyCircle: true // Activa el radio clásico de aproximación
+        });
+        mapa.addControl(geolocateControl, 'top-right');
+
         setTimeout(() => mapa.resize(), 400);
 
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function (position) {
-                mapa.flyTo({ center: [position.coords.longitude, position.coords.latitude], zoom: 16, essential: true });
-            });
-        }
+        // Disparar la localización automáticamente al cargar el mapa
+        mapa.on('load', function() {
+            geolocateControl.trigger();
+        });
 
+        // Evento que se dispara cuando la brújula encuentra al usuario
+        geolocateControl.on('geolocate', function(e) {
+            // CORRECCIÓN: Solo ubicamos al usuario (punto azul y radio), 
+            // pero NO ponemos el pin rojo automáticamente para no agotar llamadas a la API
+            // y permitir que el usuario decida el punto exacto.
+            
+            // Nos aseguramos de mostrarle las instrucciones para que toque el mapa
+            const inst = document.getElementById('instrucciones-mapa');
+            inst.classList.remove('hidden');
+            
+            // Animación sutil para llamar la atención a las instrucciones
+            inst.classList.add('ring-2', 'ring-institucional', 'scale-105');
+            setTimeout(() => {
+                inst.classList.remove('ring-2', 'ring-institucional', 'scale-105');
+            }, 2000);
+        });
+
+        // Click manual en el mapa (Mantenemos tu funcionalidad)
         mapa.on('click', function(e) {
             const lng = e.lngLat.lng;
             const lat = e.lngLat.lat;
